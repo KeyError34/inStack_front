@@ -1,10 +1,14 @@
-import Button from "./ui/button";
-import Input from "./ui/input/input";
+
+import Menu from './components/menu';
+
 function App() {
-  return <>
-    <Button>log</Button>
-    <Input/>
-  </>;
+  return (
+    <>
+
+      <Menu />
+      
+    </>
+  );
 }
 
 export default App;
