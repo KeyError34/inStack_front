@@ -11,17 +11,25 @@ interface IButton extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const Button = forwardRef<HTMLButtonElement, IButton>(
   (
-    { type = 'button', variant = 'primary', children, onClick, icon, ...props },
+    {
+      type = 'button',
+      variant = 'primary',
+      children,
+      onClick,
+      icon,
+      className,
+      ...props
+    },
     ref
   ) => {
     const styles = {
       primary:
-        'bg-blue-500 hover:bg-blue-400 active:bg-blue-300  text-white rounded-xl p-2 font-semibold',
-      secondary: 'bg-transparent text-black p-2',
-      icon: 'h-10 w-10 bg-green-500',
+        'bg-blue-500 hover:bg-blue-400 active:bg-blue-300 text-white rounded-xl px-4 py-2 sm:px-6 sm:py-3 w-full sm:w-auto font-semibold',
+      secondary: 'bg-transparent text-black text-sm sm:text-base p-2',
+      icon: 'h-10 w-10 sm:h-12 sm:w-12 bg-green-500 flex items-center justify-center',
     };
 
-    const buttonClass = clsx(styles[variant], '');
+    const buttonClass = clsx(styles[variant], className);
 
     return (
       <button
@@ -31,7 +39,11 @@ const Button = forwardRef<HTMLButtonElement, IButton>(
         onClick={onClick}
         {...props}
       >
-        {icon ? <span>{icon}</span> : children}
+        {icon ? (
+          <span className="flex items-center justify-center">{icon}</span>
+        ) : (
+          children
+        )}
       </button>
     );
   }
