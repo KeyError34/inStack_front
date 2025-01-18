@@ -1,11 +1,11 @@
-import clsx from 'clsx';
-import {
+import React, {
   forwardRef,
   ChangeEvent,
-  TextareaHTMLAttributes,
   InputHTMLAttributes,
+  TextareaHTMLAttributes,
   Ref,
 } from 'react';
+import clsx from 'clsx';
 
 type InputVariant = 'primary' | 'secondary' | 'error';
 
@@ -16,10 +16,14 @@ interface BaseProps {
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => void;
   onBlur?: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  placeholder?: string;
+  name?: string;
+  value?: string | number;
+  style?: React.CSSProperties;
 }
 
 type InputSpecificProps = InputHTMLAttributes<HTMLInputElement> & {
-  type?: 'text' | 'email' | 'password';
+  type?: 'text' | 'email' | 'password'; // Убираем 'checkbox'
 };
 
 type TextareaSpecificProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
@@ -28,7 +32,7 @@ type TextareaSpecificProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {
 
 type InputProps = BaseProps & (InputSpecificProps | TextareaSpecificProps);
 
-const Input = forwardRef<HTMLTextAreaElement | HTMLInputElement, InputProps>(
+const Input = forwardRef<HTMLInputElement | HTMLTextAreaElement, InputProps>(
   (
     {
       variant = 'primary',
@@ -36,11 +40,15 @@ const Input = forwardRef<HTMLTextAreaElement | HTMLInputElement, InputProps>(
       onChange,
       onBlur,
       className,
+      placeholder,
+      name,
+      value,
+      style,
       ...props
     },
     ref
   ) => {
-    const styles = {
+    const styles: { [key in InputVariant]: string } = {
       primary:
         'placeholder:font-light placeholder:text-sm border border-gray-300 rounded py-2 px-3 sm:py-3 sm:px-5 bg-gray-50 text-sm sm:text-base focus:border-blue-500 focus:outline-none w-full max-w-[268px]',
       secondary:
@@ -58,6 +66,10 @@ const Input = forwardRef<HTMLTextAreaElement | HTMLInputElement, InputProps>(
           className={clsx(inputClass, 'h-38 sm:h-24 lg:h-32 resize-none')}
           onChange={onChange}
           onBlur={onBlur}
+          placeholder={placeholder}
+          name={name}
+          value={value as string}
+          style={style}
           {...(props as TextareaHTMLAttributes<HTMLTextAreaElement>)}
         />
       );
@@ -70,13 +82,14 @@ const Input = forwardRef<HTMLTextAreaElement | HTMLInputElement, InputProps>(
         type={type}
         onChange={onChange}
         onBlur={onBlur}
+        placeholder={placeholder}
+        name={name}
+        value={value}
+        style={style}
         {...(props as InputHTMLAttributes<HTMLInputElement>)}
       />
     );
   }
 );
 
-
 export default Input;
-
-

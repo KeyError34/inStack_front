@@ -1,8 +1,8 @@
-const Create = () => {
+const Explore = () => {
   return (
     <>
-      <div>Create</div>
+      <div>Explore</div>
     </>
   );
 };
-export default Create;
+export default Explore;

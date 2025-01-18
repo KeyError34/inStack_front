@@ -1,4 +1,3 @@
-import clsx from 'clsx';
 import { forwardRef, ButtonHTMLAttributes } from 'react';
 
 type ButtonVariant = 'primary' | 'secondary' | 'icon';
@@ -29,7 +28,8 @@ const Button = forwardRef<HTMLButtonElement, IButton>(
       icon: 'h-10 w-10 sm:h-12 sm:w-12 bg-green-500 flex items-center justify-center',
     };
 
-    const buttonClass = clsx(styles[variant], className,'');
+    // Комбинируем стили с className, если он передан
+    const buttonClass = `${styles[variant]} ${className || ''}`;
 
     return (
       <button
@@ -48,6 +48,5 @@ const Button = forwardRef<HTMLButtonElement, IButton>(
     );
   }
 );
-
 
 export default Button;
