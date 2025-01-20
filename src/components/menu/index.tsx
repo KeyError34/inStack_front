@@ -1,3 +1,5 @@
+import  { useState, useEffect } from 'react';
+import axios from 'axios';
 import {
   HomeIcon,
   SearchIcon,
@@ -10,7 +12,27 @@ import {
 import MenuItem from '../../ui/menu_item/index';
 
 const Menu = () => {
-  const username =localStorage.getItem('username')
+  const username = localStorage.getItem('username'); 
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProfileImage = async () => {
+      if (!username) return; 
+
+      try {
+        const response = await axios.get(`http://localhost:3333/api/avatar/${username}`);
+        
+        if (response.data?.data?.avatar) {
+          setProfileImage(response.data.data.avatar); 
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки аватара', error);
+      }
+    };
+
+    fetchProfileImage();
+  }, [username]); 
+
   const menuItems = [
     { name: 'Home', path: '/', icon: <HomeIcon /> },
     { name: 'Search', path: '/search', icon: <SearchIcon /> },
@@ -20,6 +42,7 @@ const Menu = () => {
       name: 'Notifications',
       path: '/notification',
       icon: <NotificationIcon />,
+      hideOnMobile: true,
     },
     {
       name: 'Create',
@@ -30,8 +53,15 @@ const Menu = () => {
     {
       name: 'Profile',
       path: `/profile/${username}`,
-      icon: <ProfileIcon />,
-      hideOnMobile: true,
+      icon: profileImage ? (
+        <img
+          src={profileImage}
+          alt="Profile"
+          className="object-cover w-8 h-8 rounded-full"
+        />
+      ) : (
+        <ProfileIcon />
+      ),
     },
   ];
 
@@ -66,7 +96,6 @@ const Menu = () => {
             ))}
         </div>
       </div>
-      
     </div>
   );
 };

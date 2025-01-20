@@ -9,10 +9,11 @@ import Search from './pages/search';
 import Explore from './pages/explore';
 import Messages from './pages/messages';
 import Notification from './pages/notification';
-import CreatePost from './pages/create';
+
 import Profile from './pages/profile';
 import UpdateProfileInfo from './pages/updateProfileInfo';
 import ModalData from './pages/create';
+import PostPage from './pages/postPage';
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const isAuthenticated = !!localStorage.getItem('token');
@@ -60,6 +61,8 @@ function MainLayout() {
           <Route path="*" element={<Navigate to="/" />} />
           <Route path="/profile-info" element={<UpdateProfileInfo />} />
           <Route path="/create/share" element={<ModalData />} />
+          <Route path="/post/:postId" element={<PostPage />} />
+          <Route path="/post/clouse" element={<PostPage />} />
         </Routes>
       </div>
     </div>

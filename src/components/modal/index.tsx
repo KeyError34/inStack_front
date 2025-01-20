@@ -17,16 +17,17 @@ const Modal = ({ isOpen, onClose, title, modal, children }: ModalProps) => {
       onClick={onClose}
     >
       <div
+       
         className="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg sm:ml-24"
-        onClick={(e) => e.stopPropagation()} // Останавливаем всплытие, чтобы закрытие работало только при клике вне модалки
+        onClick={(e) => e.stopPropagation()} 
       >
-        {/* Заголовок и кнопка открытия второй модалки */}
+       
         <div className="flex items-center justify-between pb-2 border-b">
           {title && <h2 className="text-lg font-semibold">{title}</h2>}
           {modal && <div className="flex-shrink-0">{modal}</div>}
         </div>
 
-        {/* Основной контент */}
+        
         <div className="mt-4">{children}</div>
       </div>
     </div>
