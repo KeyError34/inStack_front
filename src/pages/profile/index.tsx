@@ -4,6 +4,9 @@ import axios from 'axios';
 import Button from '../../ui/button';
 import MediaSlider from '../../components/post';
 import { jwtDecode } from 'jwt-decode';
+import PostModal, { PostDetails } from '../../components/postModal';
+
+import { Comment } from '../../components/postModal';
 
 interface IUserProfile {
   user: {
@@ -29,20 +32,7 @@ interface IUserProfile {
   postsCount: number;
 }
 
-interface IPost {
-  _id: string;
-  imageUrls: string[];
-  videoUrl: string;
-  user: {
-    avatar: string;
-    username: string;
-  };
-  createdAt: string;
-  likesCount: number;
-  likes: string[];
-  content: string;
-  
-}
+import { IPost } from '../home';
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -57,6 +47,11 @@ const Profile = () => {
   const [error, setError] = useState<string>('');
   const [avatar, setAvatar] = useState<string | null>(null);
   const [isFollowing, setIsFollowing] = useState<boolean>(false);
+
+  const [selectedPost, setSelectedPost] = useState<PostDetails | null>(null);
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openCommentsModal, setOpenCommentsModal] = useState<boolean>(false);
+  const [newComment, setNewComment] = useState<string>('');
 
   const getUserIdFromToken = (): string => {
     const token = localStorage.getItem('token');
@@ -73,7 +68,7 @@ const Profile = () => {
   };
 
   const userId = getUserIdFromToken();
-
+  console.log('userId', userId);
   useEffect(() => {
     if (!username) {
       setError('Имя пользователя не найдено');
@@ -97,7 +92,7 @@ const Profile = () => {
 
         const userProfile = response.data.data;
         setUser(userProfile);
-        console.log(userProfile)
+        console.log(userProfile);
         setAvatar(userProfile.avatar || '');
 
         // Установить статус подписки
@@ -199,13 +194,142 @@ const Profile = () => {
     }
   };
 
-  const handlePostModal = (postId: string) => {
-    navigate(`/post/${postId}`);
+
+  const fetchPostDetails = async (postId: string) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3333/api/post/${postId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+
+      const post = response.data.data;
+      
+
+
+      const filteredComments = post.comments.filter(
+        (comment: Comment) =>
+          comment.content !== 'No content' && 
+          comment.username !== 'Anonymous' && 
+          comment.avatar !== 'default-avatar.png'
+      );
+
+     
+      const updatedComments = filteredComments.map((comment: Comment) => ({
+        ...comment,
+        isLiked: comment.likes.includes(userId), 
+      }));
+
+
+      setSelectedPost({
+        ...post,
+        comments: updatedComments, 
+      });
+      setOpenModal(true);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.response?.data?.message || 'Ошибка при загрузке поста');
+    }
+  };
+  const handleOpenModal = (postId: string) => {
+    fetchPostDetails(postId);
   };
 
-  if (loading) return <p>Загрузка...</p>;
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setSelectedPost(null);
+  };
+
+  const handleOpenCommentsModal = () => {
+    setOpenCommentsModal(true);
+  };
+
+  const handleCloseCommentsModal = () => {
+    setOpenCommentsModal(false);
+  };
+
+  const handleCommentSubmit = async () => {
+    if (!newComment.trim() || !selectedPost) return;
+
+    try {
+      const response = await axios.post(
+        `http://localhost:3333/api/post/${selectedPost._id}/comment`,
+        { content: newComment },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+
+      // Обновляем комментарии для текущего поста
+      const updatedComment = response.data.data;
+      setSelectedPost((prev) =>
+        prev
+          ? {
+              ...prev,
+              comments: [...(prev.comments || []), updatedComment],
+              commentsCount: prev.commentsCount + 1,
+            }
+          : null
+      );
+
+      // Обновляем комментарии на главной странице
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === selectedPost._id
+            ? { ...post, comments: [...(post.comments || []), updatedComment] }
+            : post
+        )
+      );
+
+      setNewComment('');
+    } catch (err: any) {
+      setError(
+        err.response?.data?.message || 'Ошибка при добавлении комментария'
+      );
+    }
+  };
+
+  const toggleLikeComment = async (commentId: string) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3333/api/comment/${commentId}/togglelike`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        }
+      );
+
+      const updatedComment = response.data.data;
+
+      setSelectedPost((prev) =>
+        prev
+          ? {
+              ...prev,
+              comments: prev.comments.map((comment) =>
+                comment._id === commentId
+                  ? {
+                      ...comment,
+                      likes: updatedComment.likes,
+                      isLiked: updatedComment.likes.includes(userId),
+                    }
+                  : comment
+              ),
+            }
+          : null
+      );
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Ошибка при лайке комментария');
+    }
+  };
+
+  if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
-  if (!user) return <p>Профиль не найден</p>;
+  if (!user) return <p>Profile not found</p>;
 
   const profileLink: string = `${window.location.origin}/profile/${user.user.username}`;
   const canEditProfile = user.user.username === currentUsername;
@@ -294,7 +418,7 @@ const Profile = () => {
             className="z-20 w-full bg-gray-200 aspect-square overflow-y-clip"
           >
             <MediaSlider
-              onClick={() => handlePostModal(post._id)}
+              onClick={() => handleOpenModal(post._id)}
               media={
                 post.imageUrls.length > 0 ? post.imageUrls : [post.videoUrl]
               }
@@ -310,6 +434,21 @@ const Profile = () => {
           </div>
         ))}
       </div>
+
+      {selectedPost && (
+        <PostModal
+          openModal={openModal}
+          handleCloseModal={handleCloseModal}
+          selectedPost={selectedPost}
+          handleOpenCommentsModal={handleOpenCommentsModal}
+          openCommentsModal={openCommentsModal}
+          handleCloseCommentsModal={handleCloseCommentsModal}
+          handleCommentSubmit={handleCommentSubmit}
+          newComment={newComment}
+          setNewComment={setNewComment}
+          toggleLikeComment={toggleLikeComment}
+        />
+      )}
     </div>
   );
 };

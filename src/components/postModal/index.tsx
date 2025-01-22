@@ -1,10 +1,10 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
-import { Modal, Button } from '@mui/material';
+import { Modal } from '@mui/material';
 import axios from 'axios';
 import like from '../../assets/icons/like.svg';
 import likedFot from '../../assets/icons/liked.svg';
 import comentImg from '../../assets/icons/dialog.svg'
-// Тип для информации о пользователе
+import { useSwipeable } from 'react-swipeable';
 export interface UserDetails {
   _id: string;
   username: string;
@@ -107,6 +107,9 @@ const PostModal: React.FC<PostModalProps> = ({
   const username = localStorage.getItem('username');
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
+
+
+  
   useEffect(() => {
     const fetchProfileImage = async () => {
       if (!username) return;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import MediaSlider from '../../components/post';
-import { useNavigate } from 'react-router-dom';
+
 import {jwtDecode} from 'jwt-decode';
 import { IPost } from '../home';
 import { PostDetails } from '../../components/postModal';
@@ -37,7 +37,7 @@ const Explore: React.FC = () => {
   const userId = getUserIdFromToken();
   console.log(userId);
 
-  // Функция для получения и форматирования постов
+
   const fetchPosts = async () => {
     setLoading(true);
     setError(null);
@@ -81,9 +81,6 @@ const Explore: React.FC = () => {
     fetchPosts();
   }, []);
 
-  // const handlePostModal = (postId: string) => {
-  //   navigate(`/post/${postId}`);
-  // };
 
 
 const fetchPostDetails = async (postId: string) => {
@@ -99,15 +96,23 @@ const fetchPostDetails = async (postId: string) => {
 
     const post = response.data.data;
 
-    // Добавляем поле isLiked к каждому комментарию
-    const updatedComments = post.comments.map((comment: Comment) => ({
+    const filteredComments = post.comments.filter(
+      (comment: Comment) =>
+        comment.content !== 'No content' && 
+        comment.username !== 'Anonymous' &&
+        comment.avatar !== 'default-avatar.png' 
+    );
+
+   
+    const updatedComments = filteredComments.map((comment: Comment) => ({
       ...comment,
-      isLiked: comment.likes.includes(userId), // Проверяем, лайкнул ли пользователь
+      isLiked: comment.likes.includes(userId), 
     }));
 
+    
     setSelectedPost({
       ...post,
-      comments: updatedComments,
+      comments: updatedComments, 
     });
     setOpenModal(true);
   } catch (err: any) {
@@ -209,7 +214,7 @@ const toggleLikeComment = async (commentId: string) => {
 };
   
   if (loading) {
-    return <div>Загрузка...</div>;
+    return <div>Loading..</div>;
   }
 
   if (error) {
@@ -217,7 +222,7 @@ const toggleLikeComment = async (commentId: string) => {
   }
 
   if (posts.length === 0) {
-    return <div>Пока нет постов людей, за которыми вы следите</div>;
+    return <div>There are no posts from people...</div>;
   }
 
   return (

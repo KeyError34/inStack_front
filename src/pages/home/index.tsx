@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import MediaSlider from '../../components/post';
 import { jwtDecode } from 'jwt-decode';
-import PostModal from '../../components/postModal'; 
+import PostModal from '../../components/postModal';
+import { PostDetails } from '../../components/postModal';
+
+import { Comment } from '../../components/postModal';
 
 interface IProfile {
   _id: string;
@@ -28,10 +31,6 @@ export interface IPost {
   createdAt: string;
 }
 
-import { PostDetails } from '../../components/postModal';
-
-import { Comment } from '../../components/postModal';
-
 const Home: React.FC = () => {
   const [posts, setPosts] = useState<IPost[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -41,7 +40,6 @@ const Home: React.FC = () => {
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [openCommentsModal, setOpenCommentsModal] = useState<boolean>(false);
   const [newComment, setNewComment] = useState<string>('');
-
 
   const getUserIdFromToken = (): string => {
     const token = localStorage.getItem('token');
@@ -83,31 +81,42 @@ const Home: React.FC = () => {
     fetchPosts();
   }, []);
 
-const fetchPostDetails = async (postId: string) => {
-  try {
-    const response = await axios.get(`http://localhost:3333/api/post/${postId}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    });
+  const fetchPostDetails = async (postId: string) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3333/api/post/${postId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
 
-    const post = response.data.data;
+      const post = response.data.data;
 
-    // Добавляем поле isLiked к каждому комментарию
-    const updatedComments = post.comments.map((comment:Comment) => ({
-      ...comment,
-      isLiked: comment.likes.includes(userId), // Проверяем, лайкнул ли пользователь
-    }));
+      const filteredComments = post.comments.filter(
+        (comment: Comment) =>
+          comment.content !== 'No content' && 
+          comment.username !== 'Anonymous' && 
+          comment.avatar !== 'default-avatar.png'
+      );
 
-    setSelectedPost({
-      ...post,
-      comments: updatedComments,
-    });
-    setOpenModal(true);
-  } catch (err: any) {
-    setError(err.response?.data?.message || 'Ошибка при загрузке поста');
-  }
-};
+     
+      const updatedComments = filteredComments.map((comment: Comment) => ({
+        ...comment,
+        isLiked: comment.likes.includes(userId), 
+      }));
+
+     
+      setSelectedPost({
+        ...post,
+        comments: updatedComments, 
+      });
+      setOpenModal(true);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Ошибка при загрузке поста');
+    }
+  };
 
   const handleOpenModal = (postId: string) => {
     fetchPostDetails(postId);
@@ -163,49 +172,55 @@ const fetchPostDetails = async (postId: string) => {
 
       setNewComment('');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Ошибка при добавлении комментария');
+      setError(
+        err.response?.data?.message || 'Ошибка при добавлении комментария'
+      );
     }
   };
 
-const toggleLikeComment = async (commentId: string) => {
-  try {
-    const response = await axios.post(
-     `http://localhost:3333/api/comment/${commentId}/togglelike`,
-      {},
-      {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      }
-    );
+  const toggleLikeComment = async (commentId: string) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3333/api/comment/${commentId}/togglelike`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        }
+      );
 
-    const updatedComment = response.data.data;
+      const updatedComment = response.data.data;
 
-    setSelectedPost((prev) =>
-      prev
-        ? {
-            ...prev,
-            comments: prev.comments.map((comment) =>
-              comment._id === commentId
-                ? { ...comment, likes: updatedComment.likes, isLiked: updatedComment.likes.includes(userId) }
-                : comment
-            ),
-          }
-        : null
-    );
-  } catch (err: any) {
-    setError(err.response?.data?.message || 'Ошибка при лайке комментария');
+      setSelectedPost((prev) =>
+        prev
+          ? {
+              ...prev,
+              comments: prev.comments.map((comment) =>
+                comment._id === commentId
+                  ? {
+                      ...comment,
+                      likes: updatedComment.likes,
+                      isLiked: updatedComment.likes.includes(userId),
+                    }
+                  : comment
+              ),
+            }
+          : null
+      );
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Ошибка при лайке комментария');
+    }
+  };
+  if (loading) {
+    return <div>Loading..</div>;
   }
-};
-if (loading) {
-  return <div>Загрузка...</div>;
-}
 
-if (error) {
-  return <div className="text-red-500">{error}</div>;
-}
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
+  }
 
-if (posts.length === 0) {
-  return <div>Пока нет постов людей, за которыми вы следите</div>;
-}
+  if (posts.length === 0) {
+    return <div>There are no posts from people you follow yet.</div>;
+  }
   return (
     <div>
       <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 md:gap-6">
@@ -248,9 +263,8 @@ if (posts.length === 0) {
           handleCloseCommentsModal={handleCloseCommentsModal}
           handleCommentSubmit={handleCommentSubmit}
           newComment={newComment}
-          setNewComment={setNewComment}         
+          setNewComment={setNewComment}
           toggleLikeComment={toggleLikeComment}
-         
         />
       )}
     </div>

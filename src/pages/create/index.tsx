@@ -6,7 +6,7 @@ import axios from 'axios';
 import Modal from '../../components/modal';
 import Button from '../../ui/button';
 import Input from '../../ui/input';
-
+import upload from '../../assets/icons/upload.jpg'
 const ModalData = () => {
   const username = localStorage.getItem('username')
   const navigate = useNavigate();
@@ -115,7 +115,8 @@ const ModalData = () => {
           {/* Загрузка файлов */}
           <div className="flex flex-col items-center justify-center w-1/2 gap-4 border-r">
             <label className="text-blue-500 cursor-pointer">
-              Upload Files (jpeg, jpg, png, gif, mp4)
+             (jpeg, jpg, png, gif, mp4)
+              <img src={upload} alt="upload file"  className='w-20 m-auto' />
               <input
                 type="file"
                 className="hidden"
