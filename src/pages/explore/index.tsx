@@ -3,29 +3,23 @@ import axios from 'axios';
 import MediaSlider from '../../components/post';
 import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
-
-interface IUser {
-  username: string;
-  avatar?: string | null;
-}
-
-interface IPost {
-  _id: string;
-  content: string;
-  imageUrls: string[];
-  videoUrl?: string;
-  createdAt: string;
-  user: IUser;
-  likesCount: number;
-  likes: string[];
-}
-
+import { IPost } from '../home';
+import { PostDetails } from '../../components/postModal';
+import { Comment } from '../../components/postModal';
+import PostModal from '../../components/postModal';
 const Explore: React.FC = () => {
-  const navigate = useNavigate();
+ 
   const [posts, setPosts] = useState<IPost[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+ const [selectedPost, setSelectedPost] = useState<PostDetails | null>(null);
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openCommentsModal, setOpenCommentsModal] = useState<boolean>(false);
+  const [newComment, setNewComment] = useState<string>('');
+
+
+  
   const getUserIdFromToken = (): string => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -87,10 +81,133 @@ const Explore: React.FC = () => {
     fetchPosts();
   }, []);
 
-  const handlePostModal = (postId: string) => {
-    navigate(`/post/${postId}`);
-  };
+  // const handlePostModal = (postId: string) => {
+  //   navigate(`/post/${postId}`);
+  // };
 
+
+const fetchPostDetails = async (postId: string) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:3333/api/post/${postId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      }
+    );
+
+    const post = response.data.data;
+
+    // Добавляем поле isLiked к каждому комментарию
+    const updatedComments = post.comments.map((comment: Comment) => ({
+      ...comment,
+      isLiked: comment.likes.includes(userId), // Проверяем, лайкнул ли пользователь
+    }));
+
+    setSelectedPost({
+      ...post,
+      comments: updatedComments,
+    });
+    setOpenModal(true);
+  } catch (err: any) {
+    setError(err.response?.data?.message || 'Ошибка при загрузке поста');
+  }
+};
+
+const handleOpenModal = (postId: string) => {
+  fetchPostDetails(postId);
+};
+
+const handleCloseModal = () => {
+  setOpenModal(false);
+  setSelectedPost(null);
+};
+
+const handleOpenCommentsModal = () => {
+  setOpenCommentsModal(true);
+};
+
+const handleCloseCommentsModal = () => {
+  setOpenCommentsModal(false);
+};
+
+const handleCommentSubmit = async () => {
+  if (!newComment.trim() || !selectedPost) return;
+
+  try {
+    const response = await axios.post(
+      `http://localhost:3333/api/post/${selectedPost._id}/comment`,
+      { content: newComment },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      }
+    );
+
+    // Обновляем комментарии для текущего поста
+    const updatedComment = response.data.data;
+    setSelectedPost((prev) =>
+      prev
+        ? {
+            ...prev,
+            comments: [...(prev.comments || []), updatedComment],
+            commentsCount: prev.commentsCount + 1,
+          }
+        : null
+    );
+
+    // Обновляем комментарии на главной странице
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post._id === selectedPost._id
+          ? { ...post, comments: [...(post.comments || []), updatedComment] }
+          : post
+      )
+    );
+
+    setNewComment('');
+  } catch (err: any) {
+    setError(
+      err.response?.data?.message || 'Ошибка при добавлении комментария'
+    );
+  }
+};
+
+const toggleLikeComment = async (commentId: string) => {
+  try {
+    const response = await axios.post(
+      `http://localhost:3333/api/comment/${commentId}/togglelike`,
+      {},
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      }
+    );
+
+    const updatedComment = response.data.data;
+
+    setSelectedPost((prev) =>
+      prev
+        ? {
+            ...prev,
+            comments: prev.comments.map((comment) =>
+              comment._id === commentId
+                ? {
+                    ...comment,
+                    likes: updatedComment.likes,
+                    isLiked: updatedComment.likes.includes(userId),
+                  }
+                : comment
+            ),
+          }
+        : null
+    );
+  } catch (err: any) {
+    setError(err.response?.data?.message || 'Ошибка при лайке комментария');
+  }
+};
+  
   if (loading) {
     return <div>Загрузка...</div>;
   }
@@ -115,7 +232,7 @@ const Explore: React.FC = () => {
               post.imageUrls.length > 0 ? post.imageUrls : [post.videoUrl || '']
             }
             avatar={post.user.avatar || null}
-            onClick={() => handlePostModal(post._id)}
+            onClick={() => handleOpenModal(post._id)}
             author={post.user.username}
             date={new Date(post.createdAt).toDateString()}
             likecount={post.likesCount}
@@ -126,6 +243,21 @@ const Explore: React.FC = () => {
           />
         </div>
       ))}
+
+      {selectedPost && (
+        <PostModal
+          openModal={openModal}
+          handleCloseModal={handleCloseModal}
+          selectedPost={selectedPost}
+          handleOpenCommentsModal={handleOpenCommentsModal}
+          openCommentsModal={openCommentsModal}
+          handleCloseCommentsModal={handleCloseCommentsModal}
+          handleCommentSubmit={handleCommentSubmit}
+          newComment={newComment}
+          setNewComment={setNewComment}
+          toggleLikeComment={toggleLikeComment}
+        />
+      )}
     </div>
   );
 };

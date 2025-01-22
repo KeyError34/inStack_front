@@ -15,6 +15,7 @@ import UpdateProfileInfo from './pages/updateProfileInfo';
 import ModalData from './pages/create';
 import PostPage from './pages/postPage';
 
+
 function PrivateRoute({ children }: { children: JSX.Element }) {
   const isAuthenticated = !!localStorage.getItem('token');
   return isAuthenticated ? children : <Navigate to="/login" />;
@@ -61,8 +62,9 @@ function MainLayout() {
           <Route path="*" element={<Navigate to="/" />} />
           <Route path="/profile-info" element={<UpdateProfileInfo />} />
           <Route path="/create/share" element={<ModalData />} />
-          <Route path="/post/:postId" element={<PostPage />} />
-          <Route path="/post/clouse" element={<PostPage />} />
+          {/* <Route path="/post/:postId" element={<PostDetails />} /> */}
+          {/* <Route path="/post/:postId" element={<PostPage />} />
+          <Route path="/post/clouse" element={<PostPage />} /> */}
         </Routes>
       </div>
     </div>
