@@ -365,7 +365,7 @@ const Profile = () => {
         </div>
 
         <div className="flex flex-col items-center md:items-start">
-          <div className="flex flex-col items-end space-y-2 md:flex-row md:space-y-0 md:space-x-5">
+          <div className="flex flex-col items-center mt-2 space-y-2 md:flex-row md:space-y-0 md:space-x-5">
             <h2 className="text-lg font-semibold sm:text-2xl md:text-3xl lg:text-4xl ">
               {user.user.username}
             </h2>
