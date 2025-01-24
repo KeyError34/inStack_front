@@ -1,7 +1,9 @@
+import Messenger from "../../components/messeges";
 const Messages = () => {
   return (
     <>
-      <div>Messages</div>
+      <Messenger/>
+      
     </>
   );
 };

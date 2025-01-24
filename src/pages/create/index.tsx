@@ -74,7 +74,7 @@ const ModalData = () => {
       );
 
       // Добавляем текст
-      formData.append('content', text);
+      formData.append('content', text||' ');
 
       // Отправляем запрос на сервер
       const response = await axios.post('http://localhost:3333/api/post/create', formData, {

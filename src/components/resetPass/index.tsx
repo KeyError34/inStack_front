@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import axios from 'axios';
 import Input from '../../ui/input';
 import Button from '../../ui/button';
 import { Link } from 'react-router-dom';
@@ -9,17 +11,38 @@ interface IAccountRecovery {
 }
 
 const ResetPass = () => {
+  const [error, setError] = useState<string | null>(null); // Для отображения ошибки
+  const [message, setMessage] = useState<string | null>(null); // Для отображения успеха
+
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<IAccountRecovery>();
 
-  const onSubmit = (data: IAccountRecovery) => {
-    console.log('Login data:', data);
+  const onSubmit = async (data: IAccountRecovery) => {
+    try {
+     
+      const response = await axios.post(
+        'http://localhost:3333/api/request-password-reset',
+        {
+          email: data.emailOrUsername, 
+        }
+      );
+
+   
+      setMessage(response.data.message);
+      setError(null);
+      reset();
+    } catch (err: any) {
+     
+      setError(err.response?.data?.message || 'Something went wrong!');
+      setMessage(null);
+    }
   };
 
-  // Регулярное выражение для проверки email
+
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   return (
@@ -32,7 +55,7 @@ const ResetPass = () => {
       >
         <Input
           type="text"
-          placeholder="Username or Email"
+          placeholder="Your Email"
           className="mb-2"
           variant="primary"
           autoComplete="username"
@@ -49,11 +72,17 @@ const ResetPass = () => {
           </span>
         )}
 
-        {/* Кнопка входа */}
+    
         <Button type="submit" variant="primary" className="w-full mt-2">
           Reset your password
         </Button>
       </form>
+
+      {/* Сообщения об ошибке или успехе */}
+      {error && <div className="mt-4 text-center text-red-500">{error}</div>}
+      {message && (
+        <div className="mt-4 text-center text-green-500">{message}</div>
+      )}
 
       {/* Разделитель OR */}
       <div className="flex items-center w-full px-10 my-3">
@@ -62,12 +91,12 @@ const ResetPass = () => {
         <div className="flex-grow h-px bg-gray-300"></div>
       </div>
 
-      {/* Ссылка на восстановление пароля */}
+      {/* Ссылка на создание нового аккаунта */}
       <Link to="/signup" className="text-sm text-blue-500 ">
         Create new account
       </Link>
 
-      {/* Блок регистрации */}
+      {/* Ссылка для возврата к логину */}
       <div className="w-full py-4 mt-4 text-center border-t">
         <Link to="/login" className="font-semibold text-blue-500">
           Back to login

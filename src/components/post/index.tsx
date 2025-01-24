@@ -121,11 +121,11 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
             <img
               src={media[currentIndex]}
               alt="Media"
-              className="object-contain w-full h-full" // Изменено на object-contain
+              className="object-contain w-full h-full" 
             />
           ) : (
             <video
-              className="object-contain w-full h-full pointer-events-none" // Изменено на object-contain
+              className="object-contain w-full h-full pointer-events-none" 
               controls
               autoPlay
                 loop
@@ -145,8 +145,8 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
           </button>
           <span>{likesCount} likes</span>
         </div>
-
-        <p className="mt-2 text-sm">{truncateDescription(description, 100)}</p>
+        <div className='h-6'> <p className="mt-2 text-sm">{truncateDescription(description, 20)}</p></div>
+       
       </div>
     </div>
   );

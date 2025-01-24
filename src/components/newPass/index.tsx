@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import axios from 'axios';
 import Input from '../../ui/input';
 import Button from '../../ui/button';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom'; // добавим useLocation и useNavigate
 import lockPass from '../../assets/icons/lock_pass.svg';
 
 interface INewPass {
@@ -9,14 +11,48 @@ interface INewPass {
 }
 
 const NewPass = () => {
+  const [error, setError] = useState<string | null>(null); 
+  const [message, setMessage] = useState<string | null>(null); 
+  const { search } = useLocation(); 
+  const navigate = useNavigate(); 
+
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset, 
   } = useForm<INewPass>();
 
-  const onSubmit = (data: INewPass) => {
-    console.log('New password data:', data);
+
+  const token = new URLSearchParams(search).get('token');
+
+  const onSubmit = async (data: INewPass) => {
+    if (!token) {
+      setError('Token is missing or invalid');
+      return;
+    }
+
+    try {
+   
+      const response = await axios.post(
+        'http://localhost:3333/api/reset-password',
+        {
+          token,
+          newPassword: data.password,
+        }
+      );
+
+      setMessage(response.data.message);
+      setError(null);      
+      reset();
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+    } catch (err: any) {
+      
+      setError(err.response?.data?.message || 'Something went wrong!');
+      setMessage(null); 
+    }
   };
 
   return (
@@ -27,7 +63,7 @@ const NewPass = () => {
         onSubmit={handleSubmit(onSubmit)}
         className="flex flex-col w-full px-10"
       >
-        {/* Скрытое поле username */}
+        
         <input
           type="text"
           name="username"
@@ -54,12 +90,16 @@ const NewPass = () => {
           </span>
         )}
 
-        {/* Кнопка отправки */}
         <Button type="submit" variant="primary" className="w-full mt-2">
           Set New Password
         </Button>
       </form>
-      {/* Ссылка назад */}
+
+      {error && <div className="mt-4 text-center text-red-500">{error}</div>}
+      {message && (
+        <div className="mt-4 text-center text-green-500">{message}</div>
+      )}
+
       <div className="w-full pt-3 mt-4 text-center border-t">
         <Link to="/login" className="font-semibold text-black">
           Back to login

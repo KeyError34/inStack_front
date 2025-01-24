@@ -116,7 +116,7 @@ const SignUpForm = () => {
           {...register('password', {
             required: 'Password is required',
             minLength: {
-              value: 6,
+              value: 8,
               message: 'Password must be at least 6 characters',
             },
           })}
