@@ -26,11 +26,14 @@ const UpdateProfileInfo = () => {
       }
 
       try {
-        const response = await axios.get('http://localhost:3333/api/profile', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(
+          `${import.meta.env.VITE_HOST_NAME}/api/profile`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         const { data } = response.data;
         setInitialData(data);
@@ -68,11 +71,15 @@ const UpdateProfileInfo = () => {
         },
       };
 
-      await axios.put('http://localhost:3333/api/profile', updatedData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await axios.put(
+        `${import.meta.env.VITE_HOST_NAME}/api/profile`,
+        updatedData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       alert('Profile successfully updated');
     } catch (err) {
       setError('Failed to update profile data');

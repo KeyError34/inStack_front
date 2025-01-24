@@ -82,7 +82,7 @@ const Profile = () => {
         if (!token) throw new Error('Токен не найден');
 
         const response = await axios.get<{ data: IUserProfile }>(
-          `http://localhost:3333/api/profile/${username}`,
+          `${import.meta.env.VITE_HOST_NAME}/api/profile/${username}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -110,7 +110,7 @@ const Profile = () => {
         if (!token) throw new Error('Токен не найден');
 
         const response = await axios.get<{ data: IPost[] }>(
-          `http://localhost:3333/api/post/user-posts/${username}`,
+          `${import.meta.env.VITE_HOST_NAME}/api/post/user-posts/${username}`,
           {
             headers: {
               Authorization: ` Bearer ${token}`,
@@ -137,7 +137,7 @@ const Profile = () => {
       if (!token) throw new Error('Токен не найден');
 
       const response = await axios.post(
-        `http://localhost:3333/api/follow/${username}`,
+        `${import.meta.env.VITE_HOST_NAME}/api/follow/${username}`,
         {},
         {
           headers: {
@@ -177,7 +177,7 @@ const Profile = () => {
       if (!token) throw new Error('Токен не найден');
 
       const response = await axios.post(
-        'http://localhost:3333/api/upload-avatar',
+        `${import.meta.env.VITE_HOST_NAME}/api/upload-avatar`,
         formData,
         {
           headers: {
@@ -198,7 +198,7 @@ const Profile = () => {
   const fetchPostDetails = async (postId: string) => {
     try {
       const response = await axios.get(
-        `http://localhost:3333/api/post/${postId}`,
+        `${import.meta.env.VITE_HOST_NAME}/api/post/${postId}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -256,7 +256,9 @@ const Profile = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:3333/api/post/${selectedPost._id}/comment`,
+        `${import.meta.env.VITE_HOST_NAME}/api/post/${
+          selectedPost._id
+        }/comment`,
         { content: newComment },
         {
           headers: {
@@ -297,7 +299,7 @@ const Profile = () => {
   const toggleLikeComment = async (commentId: string) => {
     try {
       const response = await axios.post(
-        `http://localhost:3333/api/comment/${commentId}/togglelike`,
+        `${import.meta.env.VITE_HOST_NAME}/api/comment/${commentId}/togglelike`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },

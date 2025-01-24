@@ -24,7 +24,7 @@ const Search = () => {
       if (query.length > 0) {
         setTimeout(async () => {
           const response = await axios.post(
-            'http://localhost:3333/api/search',
+            `${import.meta.env.VITE_HOST_NAME}/api/search`,
             {
               username: query,
             }

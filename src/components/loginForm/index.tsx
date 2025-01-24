@@ -30,7 +30,7 @@ const LoginForm = () => {
 
     try {
       const response = await axios.post(
-        'http://localhost:3333/api/auth/login',
+        `${import.meta.env.VITE_HOST_NAME}/api/auth/login`,
         {
           emailOrUsername, // Передаем только одно поле
           password,

@@ -58,7 +58,7 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
   const handleLikeClick = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:3333/api/post/${postId}/like`,
+        `${import.meta.env.VITE_HOST_NAME}/api/post/${postId}/like`,
         {},
         {
           headers: {

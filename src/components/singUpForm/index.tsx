@@ -22,7 +22,7 @@ const SignUpForm = () => {
   const onSubmit = async (data: SignUpFormData) => {
     try {
       const response = await axios.post(
-        'http://localhost:3333/api/auth/register',
+        `${import.meta.env.VITE_HOST_NAME}/api/auth/register`,
         data
       ); // Замените на ваш реальный URL для регистрации
       if (response.status === 201) {

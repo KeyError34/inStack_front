@@ -35,7 +35,7 @@ const NewPass = () => {
     try {
    
       const response = await axios.post(
-        'http://localhost:3333/api/reset-password',
+        `${import.meta.env.VITE_HOST_NAME}/api/reset-password`,
         {
           token,
           newPassword: data.password,

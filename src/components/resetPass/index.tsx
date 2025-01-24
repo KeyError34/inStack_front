@@ -25,9 +25,9 @@ const ResetPass = () => {
     try {
      
       const response = await axios.post(
-        'http://localhost:3333/api/request-password-reset',
+        `${import.meta.env.VITE_HOST_NAME}/api/request-password-reset`,
         {
-          email: data.emailOrUsername, 
+          email: data.emailOrUsername,
         }
       );
 

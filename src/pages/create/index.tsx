@@ -77,12 +77,16 @@ const ModalData = () => {
       formData.append('content', text||' ');
 
       // Отправляем запрос на сервер
-      const response = await axios.post('http://localhost:3333/api/post/create', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_HOST_NAME}/api/post/create`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
 
       if (response.status === 201) {
         alert('Post successfully created!');

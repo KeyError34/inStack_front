@@ -20,7 +20,9 @@ const Menu = () => {
       if (!username) return; 
 
       try {
-        const response = await axios.get(`http://localhost:3333/api/avatar/${username}`);
+        const response = await axios.get(
+          `${import.meta.env.VITE_HOST_NAME}/api/avatar/${username}`
+        );
         
         if (response.data?.data?.avatar) {
           setProfileImage(response.data.data.avatar); 

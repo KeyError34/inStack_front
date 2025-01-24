@@ -44,7 +44,7 @@ const Explore: React.FC = () => {
 
     try {
       const response = await axios.get(
-        'http://localhost:3333/api/post/all-users-posts',
+        `${import.meta.env.VITE_HOST_NAME}/api/post/all-users-posts`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -86,7 +86,7 @@ const Explore: React.FC = () => {
 const fetchPostDetails = async (postId: string) => {
   try {
     const response = await axios.get(
-      `http://localhost:3333/api/post/${postId}`,
+      `${import.meta.env.VITE_HOST_NAME}/api/post/${postId}`,
       {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -142,7 +142,7 @@ const handleCommentSubmit = async () => {
 
   try {
     const response = await axios.post(
-      `http://localhost:3333/api/post/${selectedPost._id}/comment`,
+      `${import.meta.env.VITE_HOST_NAME}/api/post/${selectedPost._id}/comment`,
       { content: newComment },
       {
         headers: {
@@ -183,7 +183,7 @@ const handleCommentSubmit = async () => {
 const toggleLikeComment = async (commentId: string) => {
   try {
     const response = await axios.post(
-      `http://localhost:3333/api/comment/${commentId}/togglelike`,
+      `${import.meta.env.VITE_HOST_NAME}/api/comment/${commentId}/togglelike`,
       {},
       {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
