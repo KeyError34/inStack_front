@@ -1,8 +1,6 @@
 const Notification = () => {
   return (
-    <>
-      <div>Notification</div>
-    </>
+   <div className="flex items-center justify-center mt-20">In Development</div>
   );
 };
 export default Notification;

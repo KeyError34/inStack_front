@@ -291,7 +291,7 @@ const Profile = () => {
       setNewComment('');
     } catch (err: any) {
       setError(
-        err.response?.data?.message || 'Ошибка при добавлении комментария'
+        err.response?.data?.message || 'Error adding commentar'
       );
     }
   };
@@ -370,13 +370,26 @@ const Profile = () => {
               {user.user.username}
             </h2>
             {canEditProfile ? (
-              <Button
-                variant="secondary"
-                className="p-1 text-black bg-gray-300 hover:bg-gray-300"
-                onClick={() => navigate('/profile-info')}
-              >
-                Edit Profile
-              </Button>
+              <>
+                <Button
+                  variant="secondary"
+                  className="p-1 text-black bg-gray-300 hover:bg-gray-300"
+                  onClick={() => navigate('/profile-info')}
+                >
+                  Edit Profile
+                </Button>
+                <Button
+                  variant="secondary"
+                  className="p-1 text-black bg-gray-300 hover:bg-gray-300"
+                  onClick={() => {
+                    localStorage.removeItem('token')
+                    localStorage.removeItem('username');
+                    navigate('/login')
+                  }}
+                >
+                  Log out
+                </Button>
+              </>
             ) : (
               <Button
                 variant="secondary"
@@ -413,7 +426,7 @@ const Profile = () => {
 
       <hr className="my-6 border-gray-300" />
 
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 md:gap-4">
+      <div className="grid grid-cols-1 gap-2 mb-20 sm:grid-cols-2 md:grid-cols-3 md:gap-4">
         {posts.map((post) => (
           <div
             key={post._id}

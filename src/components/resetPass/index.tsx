@@ -11,8 +11,8 @@ interface IAccountRecovery {
 }
 
 const ResetPass = () => {
-  const [error, setError] = useState<string | null>(null); // Для отображения ошибки
-  const [message, setMessage] = useState<string | null>(null); // Для отображения успеха
+  const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
   const {
     register,

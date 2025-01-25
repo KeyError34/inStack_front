@@ -24,9 +24,9 @@ const SignUpForm = () => {
       const response = await axios.post(
         `${import.meta.env.VITE_HOST_NAME}/api/auth/register`,
         data
-      ); // Замените на ваш реальный URL для регистрации
+      ); 
       if (response.status === 201) {
-        // После успешной регистрации перенаправляем на страницу логина
+        
         navigate('/login');
       }
     } catch (error) {

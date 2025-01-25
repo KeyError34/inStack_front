@@ -96,7 +96,7 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
       <div className="relative p-4 bg-gray-200 rounded-t-lg">
         <div
           onClick={onClickToUserProf}
-          className="absolute top-0 left-0 right-0 flex items-center p-4 bg-white rounded-t-lg"
+          className="absolute top-0 left-0 right-0 flex items-center p-4 bg-white rounded-t-lg cursor-pointer"
         >
           <img
             src={avatar || ''}
@@ -113,7 +113,7 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
 
         <div
           {...swipeHandlers}
-          className="relative flex items-center justify-center w-full mt-16 bg-black h-80"
+          className="relative flex items-center justify-center w-full mt-20 bg-black h-80"
           onClick={onClick}
         >
           {media[currentIndex] &&
@@ -121,15 +121,14 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
             <img
               src={media[currentIndex]}
               alt="Media"
-              className="object-contain w-full h-full" 
+              className="object-contain w-full h-full"
             />
           ) : (
             <video
-              className="object-contain w-full h-full pointer-events-none" 
+              className="object-contain w-full h-full pointer-events-none"
               controls
               autoPlay
-                loop
-               
+              loop
             >
               <source src={media[currentIndex]} type="video/mp4" />
               Your browser does not support the video tag.
@@ -145,8 +144,10 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
           </button>
           <span>{likesCount} likes</span>
         </div>
-        <div className='h-6'> <p className="mt-2 text-sm">{truncateDescription(description, 20)}</p></div>
-       
+        <div className="h-6">
+          {' '}
+          <p className="mt-2 text-sm">{truncateDescription(description, 20)}</p>
+        </div>
       </div>
     </div>
   );

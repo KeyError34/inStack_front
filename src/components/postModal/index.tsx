@@ -107,6 +107,9 @@ const PostModal: React.FC<PostModalProps> = ({
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
   const [currentIndex, setCurrentIndex] = useState(0);
+const [isOpenModal,setIsOpenModal]= useState(true)
+  
+  
 
   const handlers = useSwipeable({
     onSwipedLeft: () =>
@@ -157,8 +160,21 @@ const PostModal: React.FC<PostModalProps> = ({
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
-          <div className="relative w-full max-w-3xl p-4 mx-auto my-8 bg-white rounded-lg shadow-lg sm:mx-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto "
+          onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+            if (e.target === e.currentTarget) {
+              setIsOpenModal(false);
+              handleCloseModal();
+            }
+          }}
+        >
+          <div
+            className="relative w-full max-w-3xl p-4 mx-auto my-8 bg-white rounded-lg shadow-lg sm:mx-4"
+            onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+              e.stopPropagation();
+            }}
+          >
             {selectedPost ? (
               <div className="max-h-[80vh] overflow-y-auto">
                 <div className="flex items-center mb-4">
@@ -233,8 +249,21 @@ const PostModal: React.FC<PostModalProps> = ({
 
       {/* Modal для комментариев */}
       <Modal open={openCommentsModal} onClose={handleCloseCommentsModal}>
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
-          <div className="relative w-full max-w-3xl p-4 mx-auto my-8 bg-white rounded-lg shadow-lg sm:mx-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto"
+          onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+            if (e.target === e.currentTarget) {
+              setIsOpenModal(false);
+             handleCloseCommentsModal()
+            }
+          }}
+        >
+          <div
+            className="relative w-full max-w-3xl p-4 mx-auto my-8 bg-white rounded-lg shadow-lg sm:mx-4"
+            onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+              e.stopPropagation();
+            }}
+          >
             {selectedPost ? (
               <div className="max-h-[80vh] overflow-y-auto">
                 <span

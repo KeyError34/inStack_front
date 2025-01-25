@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import axios from 'axios';
 import Input from '../../ui/input';
 import Button from '../../ui/button';
-import { Link, useLocation, useNavigate } from 'react-router-dom'; // добавим useLocation и useNavigate
+import { Link, useLocation, useNavigate } from 'react-router-dom'; 
 import lockPass from '../../assets/icons/lock_pass.svg';
 
 interface INewPass {

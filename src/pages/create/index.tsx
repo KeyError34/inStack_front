@@ -1,33 +1,28 @@
-
-
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import Modal from '../../components/modal';
 import Button from '../../ui/button';
 import Input from '../../ui/input';
-import upload from '../../assets/icons/upload.jpg'
+import upload from '../../assets/icons/upload.jpg';
 const ModalData = () => {
-  const username = localStorage.getItem('username')
+  const username = localStorage.getItem('username');
   const navigate = useNavigate();
   const location = useLocation();
 
   const [files, setFiles] = useState<File[]>([]);
   const [text, setText] = useState('');
-  const [loading, setLoading] = useState(false); // Индикатор загрузки
-  const [error, setError] = useState(''); // Для отображения ошибок
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // Определяем, открыта ли модалка, по URL
   const isModalOpen = location.pathname === '/create';
   const isShareModalOpen = location.pathname === '/create/share';
 
-  // Валидация формата файла
   const validateFile = (file: File): boolean => {
     const validFormats = /\.(jpeg|jpg|png|gif|mp4)$/i;
     return validFormats.test(file.name);
   };
 
-  // Обработка загрузки файлов
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
     if (!selectedFiles) return;
@@ -65,7 +60,7 @@ const ModalData = () => {
       setLoading(true);
       const formData = new FormData();
 
-      // Добавляем файлы
+   
       files.forEach((file) =>
         formData.append(
           file.type.startsWith('image') ? 'images' : 'video',
@@ -73,10 +68,8 @@ const ModalData = () => {
         )
       );
 
-      // Добавляем текст
-      formData.append('content', text||' ');
+      formData.append('content', text || ' ');
 
-      // Отправляем запрос на сервер
       const response = await axios.post(
         `${import.meta.env.VITE_HOST_NAME}/api/post/create`,
         formData,
@@ -119,8 +112,8 @@ const ModalData = () => {
           {/* Загрузка файлов */}
           <div className="flex flex-col items-center justify-center w-1/2 gap-4 border-r">
             <label className="text-blue-500 cursor-pointer">
-             (jpeg, jpg, png, gif, mp4)
-              <img src={upload} alt="upload file"  className='w-20 m-auto' />
+              (jpeg, jpg, png, gif, mp4)
+              <img src={upload} alt="upload file" className="w-20 m-auto" />
               <input
                 type="file"
                 className="hidden"

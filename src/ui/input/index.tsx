@@ -23,7 +23,7 @@ interface BaseProps {
 }
 
 type InputSpecificProps = InputHTMLAttributes<HTMLInputElement> & {
-  type?: 'text' | 'email' | 'password'; // Убираем 'checkbox'
+  type?: 'text' | 'email' | 'password'; 
 };
 
 type TextareaSpecificProps = TextareaHTMLAttributes<HTMLTextAreaElement> & {

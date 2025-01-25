@@ -9,7 +9,7 @@ const Login = () => {
         <img
           src={inStackTell}
           alt="Logo"
-          className="hidden w-[380px] h-[580px]  mr-8 md:block" // Скрываем на мобильных устройствах
+          className="hidden w-[380px] h-[580px]  mr-8 md:block" 
         />
 
         {/* Форма логина */}
