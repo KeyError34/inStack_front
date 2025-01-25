@@ -226,7 +226,7 @@ const toggleLikeComment = async (commentId: string) => {
   }
 
   return (
-    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 md:gap-4">
+    <div className="grid grid-cols-1 gap-2 4 sm:grid-cols-2 md:grid-cols-3 md:gap-4 mb-28">
       {posts.map((post) => (
         <div
           key={post._id}

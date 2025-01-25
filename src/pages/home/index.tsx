@@ -225,7 +225,7 @@ const Home: React.FC = () => {
   }
   return (
     <div>
-      <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 md:grid-cols-3 md:gap-6">
+      <div className="grid grid-cols-1 gap-4 p-4 mb-24 sm:grid-cols-2 md:grid-cols-3 md:gap-6">
         {posts && posts.length > 0 ? (
           posts.map((post) => (
             <div
