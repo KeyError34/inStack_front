@@ -38,7 +38,17 @@ const Menu = () => {
   const menuItems = [
     { name: 'Home', path: '/', icon: <HomeIcon /> },
     { name: 'Search', path: '/search', icon: <SearchIcon /> },
-    { name: 'Explore', path: '/explore', icon: <ExploreIcon /> },
+    {
+      name: 'Create',
+      path: '/create',
+      icon: <CreateIcon />,
+    },
+    {
+      name: 'Explore',
+      path: '/explore',
+      icon: <ExploreIcon />,
+      hideOnMobile: true,
+    },
     { name: 'Messages', path: '/messages', icon: <MessagesIcon /> },
     {
       name: 'Notifications',
@@ -46,12 +56,7 @@ const Menu = () => {
       icon: <NotificationIcon />,
       hideOnMobile: true,
     },
-    {
-      name: 'Create',
-      path: '/create',
-      icon: <CreateIcon />,
-      hideOnMobile: true,
-    },
+
     {
       name: 'Profile',
       path: `/profile/${username}`,
