@@ -1,10 +1,9 @@
-
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import { Modal } from '@mui/material';
 import axios from 'axios';
 import like from '../../assets/icons/like.svg';
 import likedFot from '../../assets/icons/liked.svg';
-import comentImg from '../../assets/icons/dialog.svg'
+import comentImg from '../../assets/icons/dialog.svg';
 import { useSwipeable } from 'react-swipeable';
 export interface UserDetails {
   _id: string;
@@ -101,15 +100,15 @@ const PostModal: React.FC<PostModalProps> = ({
   newComment,
   setNewComment,
   toggleLikeComment,
-  
 }) => {
   const username = localStorage.getItem('username');
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
   const [currentIndex, setCurrentIndex] = useState(0);
-const [isOpenModal,setIsOpenModal]= useState(true)
-  
-  
+  const [isOpenModal, setIsOpenModal] = useState(true);
+    const [deleteConfirmationModal, setDeleteConfirmationModal] =
+      useState<boolean>(false);
+
 
   const handlers = useSwipeable({
     onSwipedLeft: () =>
@@ -126,7 +125,7 @@ const [isOpenModal,setIsOpenModal]= useState(true)
             : prevIndex - 1
           : 0
       ),
-    
+
     trackMouse: true,
   });
 
@@ -150,6 +149,25 @@ const [isOpenModal,setIsOpenModal]= useState(true)
     fetchProfileImage();
   }, [username]);
 
+    const handleDeletePost = async () => {
+    try {
+    
+      await axios.delete(
+        `${import.meta.env.VITE_HOST_NAME}/api/post/${selectedPost?._id}`,
+        
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+        }
+      );
+      setDeleteConfirmationModal(false); 
+      handleCloseModal();
+      window.location.reload()
+      alert('Post deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting post', error);
+    alert('Can not delete a post!');
+    }
+  };
   return (
     <>
       {/* Основной Modal для поста */}
@@ -194,20 +212,48 @@ const [isOpenModal,setIsOpenModal]= useState(true)
                     </p>
                   </h1>
                   <span
-                    onClick={handleCloseModal}
-                    className="mb-3 ml-auto text-lg font-medium text-right text-gray-800 transition-transform duration-300 cursor-pointer hover:text-slate-950 hover:scale-105"
+                    onClick={() => {
+                      if (selectedPost.userDetails?.username === username) {
+                       
+                        setDeleteConfirmationModal(true);
+                      }
+                    }}
+                    className={`mb-3 ml-auto text-lg font-medium text-right text-gray-800 transition-transform duration-300 cursor-pointer hover:text-slate-950 hover:scale-105 mr-3${
+                      selectedPost.userDetails?.username === username
+                        ? ''
+                        : 'hidden'
+                    }`}
                   >
-                    go to all post
+                    delete post
                   </span>
+                  {/* Дотсы */}
                 </div>
 
-                <div className="mb-4" {...handlers}>
+                <div className="relative mb-4" {...handlers}>
                   {selectedPost.imageUrls?.length > 0 ? (
-                    <img
-                      className="w-full h-auto rounded-lg"
-                      src={selectedPost.imageUrls[currentIndex]} // Используем currentIndex
-                      alt="post"
-                    />
+                    <>
+                      {' '}
+                      <img
+                        className="w-full h-auto rounded-lg"
+                        src={selectedPost.imageUrls[currentIndex]}
+                        alt="post"
+                      />
+                      {selectedPost.imageUrls?.length > 1 && (
+                        <div className="absolute flex space-x-2 transform -translate-x-1/2 bottom-4 left-1/2">
+                          {selectedPost.imageUrls.map((_, index) => (
+                            <button
+                              key={index}
+                              onClick={() => setCurrentIndex(index)}
+                              className={`w-3 h-3 rounded-full transition-all ${
+                                index === currentIndex
+                                  ? 'bg-blue-500'
+                                  : 'bg-gray-300'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </>
                   ) : selectedPost.videoUrl ? (
                     <video className="w-full h-auto rounded-lg" controls>
                       <source src={selectedPost.videoUrl} />
@@ -254,7 +300,7 @@ const [isOpenModal,setIsOpenModal]= useState(true)
           onClick={(e: React.MouseEvent<HTMLDivElement>) => {
             if (e.target === e.currentTarget) {
               setIsOpenModal(false);
-             handleCloseCommentsModal()
+              handleCloseCommentsModal();
             }
           }}
         >
@@ -279,7 +325,7 @@ const [isOpenModal,setIsOpenModal]= useState(true)
                     selectedPost.comments.map((comment, index) => (
                       <div
                         key={index}
-                        className="flex flex-row items-start mb-4 sm:flex-row sm:items-center sm:w-full"
+                        className="flex flex-row items-center mb-4 sm:flex-row sm:items-center sm:w-full"
                       >
                         {/* Имя и Фото комментатора */}
                         <div className="flex items-center">
@@ -298,9 +344,9 @@ const [isOpenModal,setIsOpenModal]= useState(true)
                         </div>
 
                         {/* Комментарий */}
-                        <div className="flex-1 min-w-[214px]">
-                          <div className="flex items-center space-x-2">
-                            <p className="overflow-hidden text-sm text-gray-800 break-words text-ellipsis sm:max-h-none sm:text-base">
+                        <div className="flex-1 min-w-[214px] ">
+                          <div className="flex space-x-2">
+                            <p className="overflow-hidden text-sm text-gray-800 break-words text-ellipsis sm:max-h-none sm:text-base ">
                               {comment.content}
                             </p>
                           </div>
@@ -322,7 +368,7 @@ const [isOpenModal,setIsOpenModal]= useState(true)
                 <div className="relative mb-4">
                   <textarea
                     placeholder="add your comment..."
-                    className="w-full p-2 pb-12 border border-gray-300 rounded-lg resize-none" // добавлен отступ снизу для текста
+                    className="w-full p-2 pb-12 border border-gray-300 rounded-lg resize-none"
                     rows={4}
                     value={newComment}
                     onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
@@ -338,8 +384,35 @@ const [isOpenModal,setIsOpenModal]= useState(true)
                 </div>
               </div>
             ) : (
-              <p>Загрузка комментариев...</p>
+              <p>Loading posts...</p>
             )}
+          </div>
+        </div>
+      </Modal>
+      {/* Modal подтверждения удаления */}
+      <Modal
+        open={deleteConfirmationModal}
+        onClose={() => setDeleteConfirmationModal(false)}
+      >
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
+          <div className="relative w-full max-w-sm p-4 mx-auto my-8 bg-white rounded-lg shadow-lg">
+            <h2 className="mb-4 text-lg font-semibold text-center">
+              Are you sure you want to delete this post?
+            </h2>
+            <div className="flex justify-between">
+              <button
+                onClick={handleDeletePost}
+                className="px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700"
+              >
+                Delete Post
+              </button>
+              <button
+                onClick={() => setDeleteConfirmationModal(false)}
+                className="px-4 py-2 text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                Back to Post
+              </button>
+            </div>
           </div>
         </div>
       </Modal>

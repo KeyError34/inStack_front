@@ -18,6 +18,8 @@ interface MediaSliderProps {
   onClick: () => void;
 }
 
+
+
 const MediaSlider: React.FC<MediaSliderProps> = ({
   media,
   avatar,
@@ -36,7 +38,6 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
   const [liked, setLiked] = useState(false);
 
   useEffect(() => {
-    // Инициализируем состояние лайков при монтировании или изменении props
     setLikesCount(likecount);
     setLiked(likes.includes(userId));
   }, [likecount, likes, userId]);
@@ -47,6 +48,10 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
 
   const prevSlide = () => {
     setCurrentIndex((prev) => (prev - 1 + media.length) % media.length);
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index);
   };
 
   const swipeHandlers = useSwipeable({
@@ -68,11 +73,9 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
       );
       const updatedPost = response.data.data;
       setLikesCount(updatedPost.likesCount);
-      console.log(liked);
       setLiked(updatedPost.likes.includes(userId));
-      console.log(userId);
     } catch (error) {
-      console.error('Ошибка при изменении лайка:', error);
+      console.error('Error to changing like:', error);
     }
   };
 
@@ -135,6 +138,19 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
             </video>
           )}
         </div>
+
+        {/* Добавляем дотсы */}
+        <div className="absolute flex justify-center w-full pr-5 space-x-2 bottom-5">
+          {media.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-3 h-3 rounded-full ${
+                index === currentIndex ? 'bg-blue-500' : 'bg-gray-400'
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
       <div className="p-4 bg-white rounded-b-lg">
@@ -145,7 +161,6 @@ const MediaSlider: React.FC<MediaSliderProps> = ({
           <span>{likesCount} likes</span>
         </div>
         <div className="h-6">
-          {' '}
           <p className="mt-2 text-sm">{truncateDescription(description, 20)}</p>
         </div>
       </div>
