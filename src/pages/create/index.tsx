@@ -19,7 +19,7 @@ const ModalData = () => {
   const isShareModalOpen = location.pathname === '/create/share';
 
   const validateFile = (file: File): boolean => {
-    const validFormats = /\.(jpeg|jpg|png|gif|mp4)$/i;
+    const validFormats = /\.(jpeg|jpg|png|gif|mp4|heic)$/i;
     return validFormats.test(file.name);
   };
 
