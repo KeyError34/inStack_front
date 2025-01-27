@@ -214,11 +214,11 @@ const PostModal: React.FC<PostModalProps> = ({
                   <span
                     onClick={() => {
                       if (selectedPost.userDetails?.username === username) {
-                       
+                        // Логика открытия модалки удаления
                         setDeleteConfirmationModal(true);
                       }
                     }}
-                    className={`mb-3 ml-auto text-lg font-medium text-right text-gray-800 transition-transform duration-300 cursor-pointer hover:text-slate-950 hover:scale-105 mr-3${
+                    className={`mb-3 ml-auto text-lg font-medium text-right text-gray-800 transition-transform duration-300 cursor-pointer hover:text-slate-950 hover:scale-105 ${
                       selectedPost.userDetails?.username === username
                         ? ''
                         : 'hidden'
