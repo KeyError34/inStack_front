@@ -30,9 +30,11 @@ const Search = () => {
             }
           );
           setUsers(response.data);
+          
         }, 500);
       } else {
         setUsers([]);
+        window.location.reload()
       }
     } catch (err) {
       setError('Failed to search users');
@@ -41,6 +43,7 @@ const Search = () => {
 
   const handleSubmitSearch: SubmitHandler<{ username: string }> = (data) => {
     handleSearch(data.username);
+    
   };
 
   const handleUserClick = (username: string) => {
